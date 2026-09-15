@@ -5,7 +5,10 @@ Record only choices that a later implementer might otherwise revisit or interpre
 ```markdown
 # Product Decisions
 
-## Decision 1 — <Short decision title>
+## Decision D-01 — <Short decision title>
+
+状态：
+Confirmed | Assumed
 
 决定：
 <A specific choice, stated unambiguously.>
@@ -18,7 +21,10 @@ Record only choices that a later implementer might otherwise revisit or interpre
 
 ---
 
-## Decision 2 — <Short decision title>
+## Decision D-02 — <Short decision title>
+
+状态：
+Confirmed | Assumed
 
 决定：
 ...
@@ -30,7 +36,8 @@ Record only choices that a later implementer might otherwise revisit or interpre
 ...
 ```
 
+Keep decision IDs stable in Refine mode. When a decision changes, update it in place and add `变更：<what changed and why>` below its impact instead of creating a contradictory decision.
+
 Good decision topics include authentication, persistence, source of truth, external APIs, AI output contract, failure behavior, privacy boundary, platform, and explicit scope exclusions.
 
 Do not record tautologies, generic quality goals, task instructions, or features already obvious from their names. Every decision must agree with `PRODUCT.md`; if it changes a core feature, update the product definition first.
-

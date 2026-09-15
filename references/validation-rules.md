@@ -7,6 +7,7 @@ Validate logic across `PRODUCT.md`, `DECISIONS.md`, `TASKS.md`, and `BUILD_PROMP
 - There is one primary target user and one core problem.
 - There is one dominant end-to-end user flow.
 - Core Features are normally limited to 3–5 and each is required by that flow.
+- Every Core Feature has a unique, stable `CF-*` ID and every success criterion has a unique, stable `SC-*` ID.
 - Nice-to-Have items are not described elsewhere as required for V1.
 - Non-Goals do not appear as planned work or required architecture.
 - A MEDIUM or HIGH scope risk includes a concrete reduction recommendation.
@@ -14,14 +15,16 @@ Validate logic across `PRODUCT.md`, `DECISIONS.md`, `TASKS.md`, and `BUILD_PROMP
 ## 2. Feature and Task Consistency
 
 - Every Core Feature maps to at least one actionable task.
+- Every Core Feature maps to at least one success criterion in the coverage matrix.
 - Every task supports a Core Feature, a necessary product state, setup, verification, or demo.
+- Every task has a unique `T-*` ID; tasks without a Core Feature use only an allowed support label.
 - Tasks use concrete actions, are dependency-ordered, and include a completion condition.
 - No task silently introduces a new user type, flow, integration, page, or persistence requirement.
 
 Create a temporary coverage mapping while validating:
 
 ```text
-Core Feature -> Task(s) -> Success Criterion
+CF-* -> T-* -> SC-*
 ```
 
 Do not add this mapping to the deliverables unless it helps explain a conflict.
@@ -29,6 +32,7 @@ Do not add this mapping to the deliverables unless it helps explain a conflict.
 ## 3. Decision Consistency
 
 - Each decision affects implementation and includes a decision, reason, and impact.
+- Each decision has a stable `D-*` ID and a `Confirmed` or `Assumed` status.
 - Decisions agree with the Product's scope, stack, AI role, and non-goals.
 - Technical choices referenced by tasks are either obvious minimal setup or fixed in Decisions.
 - No decision adds a feature merely because the chosen technology supports it.
@@ -37,6 +41,7 @@ Do not add this mapping to the deliverables unless it helps explain a conflict.
 
 - The AI classification is one of `Essential`, `Useful`, `Optional`, or `Unnecessary`.
 - The reason identifies the exact product step that benefits from AI.
+- A concrete No-AI baseline is present for every classification.
 - `Unnecessary` projects contain no LLM tasks or AI infrastructure.
 - `Optional` projects remain useful without AI.
 - Simple generation/classification uses a bounded call and stable output contract rather than an agent loop unless the product requires iteration or tool use.
@@ -56,6 +61,15 @@ Do not add this mapping to the deliverables unless it helps explain a conflict.
 - It requires runnable checks, error repair, task-status updates, and a completion summary.
 - It contains no unresolved placeholders or reliance on the original chat.
 
+## 7. Mode and Assumption Safety
+
+- Create mode is used only when no deliverables exist.
+- Refine mode preserves stable IDs and confirmed decisions unless the user changes them.
+- Resume mode fills missing work without regenerating completed documents.
+- Existing files are read before any update and are never silently replaced.
+- Facts, assumptions, and open questions are separated.
+- Every material assumption includes confidence and impact; unresolved blocking questions are asked before delivery.
+
 ## Required Review Questions
 
 1. Is there only one primary target user?
@@ -68,6 +82,8 @@ Do not add this mapping to the deliverables unless it helps explain a conflict.
 8. Can Build Prompt be used in a new session?
 9. Is the recommended stack larger than the MVP requires?
 10. Does the AI role match the implemented functionality?
+11. Was the correct Create, Refine, or Resume mode used without silent replacement?
+12. Do all `CF-*`, `SC-*`, `D-*`, and `T-*` IDs remain unique and traceable?
 
 ## Repair Loop
 
@@ -75,5 +91,4 @@ Do not add this mapping to the deliverables unless it helps explain a conflict.
 2. Resolve it using this priority: explicit user requirement, refined MVP definition, Core Features and Non-Goals, Decisions, Tasks, Build Prompt.
 3. Prefer removing unnecessary scope over adding new features or infrastructure.
 4. Update every affected file, not only the first file where the conflict appeared.
-5. Re-run all six validation sections. Deliver only after no blocking conflicts remain.
-
+5. Re-run all seven validation sections. Deliver only after no blocking conflicts remain.

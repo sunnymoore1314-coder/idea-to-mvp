@@ -42,9 +42,9 @@ Use this template to turn the user's idea into a compact implementation contract
 
 ## Core Features
 
-1. <Feature required by the core flow>
-2. <Feature required by the core flow>
-3. <Feature required by the core flow>
+- **CF-01:** <Feature required by the core flow>
+- **CF-02:** <Feature required by the core flow>
+- **CF-03:** <Feature required by the core flow>
 
 Keep this list at roughly 3–5 items. Each feature must map to the core flow and later to one or more tasks.
 
@@ -62,12 +62,24 @@ Keep this list at roughly 3–5 items. Each feature must map to the core flow an
 
 **Reason:** <Why AI is or is not justified and exactly where it appears in the flow.>
 
-**Fallback:** <Rule-based or manual alternative when practical; write “Not required” when AI is unnecessary.>
+**No-AI baseline:** <The simplest rule-based or manual version that still addresses the problem.>
+
+**AI boundary:** <The exact step AI may perform and what it must not decide or invent. Write “None” when AI is unnecessary.>
+
+## Known Facts
+
+- <Fact explicitly supplied by the user or existing product documents>
 
 ## Important Assumptions
 
-- <Material assumption made because the user did not specify it>
-- <Constraint that affects scope or implementation>
+- **A-01 — <Assumption>:** Confidence: High | Medium | Low. Impact if wrong: <specific scope or product effect>.
+- **A-02 — <Assumption>:** Confidence: High | Medium | Low. Impact if wrong: <specific scope or product effect>.
+
+Do not place unresolved blocking questions here. Ask those before finalizing the package.
+
+## Open Questions
+
+- <Non-blocking unknown that can be resolved during implementation or testing>
 
 ## Recommended Tech Stack
 
@@ -96,9 +108,9 @@ For each non-obvious component, include a short reason. Do not turn this section
 
 ## MVP Success Criteria
 
-- <Observable end-to-end outcome>
-- <Quality or reliability threshold appropriate for a demo/MVP>
-- <Evidence that the core problem was reduced>
+- **SC-01:** <Observable end-to-end outcome linked to one or more Core Feature IDs>
+- **SC-02:** <Quality or reliability threshold appropriate for a demo/MVP>
+- **SC-03:** <Evidence that the core problem was reduced>
 
 Avoid unsupported business metrics. Prefer criteria that can be checked during a small pilot or demo.
 
@@ -112,7 +124,7 @@ Avoid unsupported business metrics. Prefer criteria that can be checked during a
 - Preserve the user's intent while making assumptions visible.
 - Define one primary user, one problem, and one dominant flow.
 - Make every core feature necessary to the success criteria.
+- Keep `CF-*` and `SC-*` IDs stable when refining an existing package.
 - Keep nice-to-have items out of the development task baseline.
 - Treat non-goals as hard V1 boundaries unless the user later changes them.
 - Align the AI classification with the actual proposed implementation.
-
