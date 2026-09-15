@@ -20,10 +20,10 @@
 
 ## Core Features
 
-1. 收集商品信息、价格、使用需求和评价文本。
-2. 提取关键优点、缺点、风险与信息缺口。
-3. 输出三级购买结论、理由和适用条件。
-4. 区分用户提供的事实与模型推断。
+- **CF-01:** 收集商品信息、价格、使用需求和评价文本。
+- **CF-02:** 提取关键优点、缺点、风险与信息缺口。
+- **CF-03:** 输出三级购买结论、理由和适用条件。
+- **CF-04:** 区分用户提供的事实与模型推断。
 
 ## Non-Goals
 
@@ -64,10 +64,10 @@
 3. 用户查看三级结论、理由、风险和适用条件。
 
 ## Core Features
-1. 商品与个人需求输入。
-2. 关键优缺点、风险和信息缺口提取。
-3. 三级购买结论及适用条件。
-4. 事实与推断标记。
+- **CF-01:** 商品与个人需求输入。
+- **CF-02:** 关键优缺点、风险和信息缺口提取。
+- **CF-03:** 三级购买结论及适用条件。
+- **CF-04:** 事实与推断标记。
 
 ## Nice-to-Have
 - 比较两个用户手动输入的候选商品。
@@ -83,11 +83,19 @@
 
 **Reason:** AI 能把非结构化评价与个人需求整理成一致的判断维度；结论仍必须受固定规则和用户提供的证据约束。
 
-**Fallback:** 使用参数权重表和人工勾选的优缺点生成规则化评分。
+**No-AI baseline:** 使用参数权重表和人工勾选的优缺点生成规则化评分。
+
+**AI boundary:** AI 只整理用户提供的材料并生成有条件结论，不得补充未提供的商品事实。
+
+## Known Facts
+- 用户希望判断一个商品是否值得购买。
 
 ## Important Assumptions
-- V1 只分析用户主动粘贴的材料，不验证材料真伪。
-- “值得”是相对用户需求与输入价格的适配判断，不是客观质量认证。
+- **A-01 — V1 只分析用户主动粘贴的材料：** Confidence: High. Impact if wrong: 需要增加数据采集、来源和新鲜度策略。
+- **A-02 — “值得”表示相对用户需求的适配：** Confidence: High. Impact if wrong: 需要重新定义结论责任边界。
+
+## Open Questions
+- 单次允许粘贴的评价文本长度可在模型和成本确定后设置。
 
 ## Recommended Tech Stack
 - **Client:** 单页 React/Next.js 表单与分析结果视图。
@@ -112,9 +120,9 @@
 - **AI 复杂度:** 3 / 5 — 结构化分析需区分事实、观点与推断。
 
 ## MVP Success Criteria
-- 用户提交一件商品后能获得且只获得一个三级结论。
-- 每条事实能追溯到用户输入，推断被明确标记。
-- 结果至少列出两个相关理由、主要风险和需要补充的信息。
+- **SC-01:** 用户提交一件商品后能获得且只获得一个三级结论。
+- **SC-02:** 每条事实能追溯到用户输入，推断被明确标记。
+- **SC-03:** 结果至少列出两个相关理由、主要风险和需要补充的信息。
 
 ## Known Risks
 - **幻觉事实:** 只允许事实字段引用输入内容，其他内容标记为推断。
@@ -126,35 +134,45 @@
 ```markdown
 # Product Decisions
 
-## Decision 1 — V1 限定消费电子
+## Decision D-01 — V1 限定消费电子
+状态：Confirmed
+
 决定：只支持普通消费电子产品。
 原因：不同品类需要不同判断标准，宽泛支持会让结论失去一致性。
 影响：界面和提示词使用电池、兼容性、性能、保修等通用电子产品维度。
 
 ---
 
-## Decision 2 — 资料由用户提供
+## Decision D-02 — 资料由用户提供
+状态：Confirmed
+
 决定：V1 不抓取商品页面或实时价格。
 原因：核心假设是分析是否有帮助，而不是数据采集能力。
 影响：必须清楚显示输入资料范围和缺失项。
 
 ---
 
-## Decision 3 — 三级结论
+## Decision D-03 — 三级结论
+状态：Confirmed
+
 决定：结论固定为“值得买”“有条件值得买”“不建议买”。
 原因：比连续分数更可行动，又能保留条件性。
 影响：响应 Schema、视觉样式和测试用例使用固定枚举。
 
 ---
 
-## Decision 4 — 事实与推断分离
+## Decision D-04 — 事实与推断分离
+状态：Confirmed
+
 决定：响应分别返回 facts 与 inferences，并为事实保留输入片段引用。
 原因：减少模型生成内容被误当成商品事实的风险。
 影响：无输入依据的内容不得进入 facts。
 
 ---
 
-## Decision 5 — 无持久化
+## Decision D-05 — 无持久化
+状态：Assumed
+
 决定：分析只存在当前会话。
 原因：账号和历史记录不是验证核心判断流程的必要条件。
 影响：不建设数据库和身份系统。
@@ -166,31 +184,39 @@
 # Development Tasks
 
 ## Phase 1 — Setup
-- [ ] Create the single-page app and analysis endpoint; done when both run locally.
-- [ ] Define input and verdict schemas with fixed enums; done when valid and invalid fixtures are correctly accepted or rejected.
+- [ ] **T-01** `[FOUNDATION]` Create the single-page app and analysis endpoint; done when both run locally.
+- [ ] **T-02** `[CF-01][CF-03][CF-04]` Define input and verdict schemas with fixed enums; done when valid and invalid fixtures are correctly accepted or rejected.
 
 ## Phase 2 — Core UI
-- [ ] Build the product-and-needs form; done when all required inputs and review text can be submitted.
-- [ ] Build the verdict view; done when verdict, reasons, risks, unknowns, facts, and inferences render from a fixture.
+- [ ] **T-03** `[CF-01]` Build the product-and-needs form; done when all required inputs and review text can be submitted.
+- [ ] **T-04** `[CF-02][CF-03][CF-04]` Build the verdict view; done when verdict, reasons, risks, unknowns, facts, and inferences render from a fixture.
 
 ## Phase 3 — Core Logic
-- [ ] Implement structured analysis for consumer electronics; done when the endpoint returns a schema-valid verdict.
-- [ ] Add input-grounding instructions and fact citations; done when every returned fact points to supplied text.
-- [ ] Connect form submission to results; done when one product completes the end-to-end flow.
+- [ ] **T-05** `[CF-02][CF-03]` Implement structured analysis for consumer electronics; done when the endpoint returns a schema-valid verdict.
+- [ ] **T-06** `[CF-04]` Add input-grounding instructions and fact citations; done when every returned fact points to supplied text.
+- [ ] **T-07** `[CF-01][CF-02][CF-03]` Connect form submission to results; done when one product completes the end-to-end flow.
 
 ## Phase 4 — Product States
-- [ ] Validate missing or oversized input; done when the UI gives a specific corrective message.
-- [ ] Handle model and schema failures; done when the user can retry without losing inputs.
+- [ ] **T-08** `[STATE]` Validate missing or oversized input; done when the UI gives a specific corrective message.
+- [ ] **T-09** `[STATE]` Handle model and schema failures; done when the user can retry without losing inputs.
 
 ## Phase 5 — Polish
-- [ ] Distinguish facts, inferences, and unknowns visually and accessibly; done when labels do not rely on color alone.
+- [ ] **T-10** `[CF-04][QUALITY]` Distinguish facts, inferences, and unknowns visually and accessibly; done when labels do not rely on color alone.
 
 ## Phase 6 — Demo
-- [ ] Add two contrasting product fixtures; done when one produces a conditional verdict and one exposes insufficient evidence.
-- [ ] Run grounding and end-to-end checks; done when all PRODUCT success criteria pass.
+- [ ] **T-11** `[SC-01][SC-03]` Add two contrasting product fixtures; done when one produces a conditional verdict and one exposes insufficient evidence.
+- [ ] **T-12** `[SC-01][SC-02][SC-03]` Run grounding and end-to-end checks; done when all PRODUCT success criteria pass.
+
+## Coverage Matrix
+
+| Core Feature | Task IDs | Success Criteria |
+| --- | --- | --- |
+| CF-01 | T-02, T-03, T-07 | SC-01 |
+| CF-02 | T-04, T-05, T-07 | SC-01, SC-03 |
+| CF-03 | T-02, T-04, T-05, T-07 | SC-01, SC-03 |
+| CF-04 | T-02, T-04, T-06, T-10 | SC-02 |
 ```
 
 ## BUILD_PROMPT.md 示例
 
 The generated prompt tells a new session to read the three planning files, start at the first unchecked setup task, support only user-supplied consumer-electronics data, use one structured analysis call with fixed verdict enums and fact citations, avoid scraping/accounts/databases/RAG, validate grounding failures, and update only completed tasks.
-

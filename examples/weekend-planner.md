@@ -20,10 +20,10 @@
 
 ## Core Features
 
-1. 收集城市、时间、预算、精力和室内/室外偏好。
-2. 生成 3 个包含时间安排、预算区间和出行提示的方案。
-3. 展示适合天气的标记与方案取舍。
-4. 支持修改条件后重新生成。
+- **CF-01:** 收集城市、时间、预算、精力和室内/室外偏好。
+- **CF-02:** 生成 3 个包含时间安排、预算区间和出行提示的方案。
+- **CF-03:** 展示适合天气的标记与方案取舍。
+- **CF-04:** 支持修改条件后重新生成。
 
 ## Non-Goals
 
@@ -65,10 +65,10 @@
 4. 修改条件并重新生成（如有需要）。
 
 ## Core Features
-1. 约束输入表单。
-2. 三方案结构化生成。
-3. 带天气适配、预算和取舍的结果卡片。
-4. 保留输入并重新生成。
+- **CF-01:** 约束输入表单。
+- **CF-02:** 三方案结构化生成。
+- **CF-03:** 带天气适配、预算和取舍的结果卡片。
+- **CF-04:** 保留输入并重新生成。
 
 ## Nice-to-Have
 - 将一个方案复制为文本。
@@ -83,11 +83,19 @@
 
 **Reason:** AI 擅长把多个软约束组合为多样化的自然语言方案，但核心体验也可用规则模板降级。
 
-**Fallback:** 从按预算、时段和室内/室外标注的本地示例池中筛选 3 项。
+**No-AI baseline:** 从按预算、时段和室内/室外标注的本地示例池中筛选 3 项。
+
+**AI boundary:** AI 只组合给定约束与演示地点，不得声称地点或天气信息为实时事实。
+
+## Known Facts
+- 用户希望获得周末去处建议。
 
 ## Important Assumptions
-- V1 只面向一个城市的演示数据，不承诺商家信息实时准确。
-- 用户无需保存结果到下一次会话。
+- **A-01 — V1 只面向一个城市的演示数据：** Confidence: Medium. Impact if wrong: 需要增加地点数据来源和城市选择策略。
+- **A-02 — 用户无需跨会话保存结果：** Confidence: High. Impact if wrong: 需要增加持久化范围。
+
+## Open Questions
+- 首个演示城市可在开始开发时根据地点数据可用性确定。
 
 ## Recommended Tech Stack
 - **Client:** 单页 React/Next.js 界面，支持表单和结果卡片。
@@ -111,9 +119,9 @@
 - **AI 复杂度:** 2 / 5 — 固定结构的单次生成。
 
 ## MVP Success Criteria
-- 用户能在 60 秒内输入条件并获得 3 个完整方案。
-- 每个方案都包含时段、预算、天气适配和至少一个取舍。
-- 改变预算或精力后，结果能反映新的限制。
+- **SC-01:** 用户能在 60 秒内输入条件并获得 3 个完整方案。
+- **SC-02:** 每个方案都包含时段、预算、天气适配和至少一个取舍。
+- **SC-03:** 改变预算或精力后，结果能反映新的限制。
 
 ## Known Risks
 - **地点信息失真:** V1 使用明确标注的演示地点并提示用户出发前核实。
@@ -125,35 +133,45 @@
 ```markdown
 # Product Decisions
 
-## Decision 1 — V1 不做账号
+## Decision D-01 — V1 不做账号
+状态：Confirmed
+
 决定：结果只保留在当前页面会话中。
 原因：保存历史不是验证“快速得到可执行方案”的必要条件。
 影响：刷新页面后结果可以丢失，不建设身份系统和数据库。
 
 ---
 
-## Decision 2 — 固定生成三个方案
+## Decision D-02 — 固定生成三个方案
+状态：Confirmed
+
 决定：每次返回且只返回 3 个结构一致的方案。
 原因：给用户选择，同时避免新的选择过载。
 影响：服务端 Schema 和结果 UI 固定为 3 项。
 
 ---
 
-## Decision 3 — 天气由用户选择
+## Decision D-03 — 天气由用户选择
+状态：Assumed
+
 决定：V1 让用户选择天气条件，不接实时天气 API。
 原因：避免外部实时依赖，仍可验证天气适配价值。
 影响：结果不得暗示天气数据为实时信息。
 
 ---
 
-## Decision 4 — 使用结构化 AI 输出
+## Decision D-04 — 使用结构化 AI 输出
+状态：Confirmed
+
 决定：一次模型调用返回固定 JSON Schema。
 原因：结果卡片需要稳定字段和可验证数量。
 影响：接口必须校验响应并提供失败重试。
 
 ---
 
-## Decision 5 — 地点为演示数据
+## Decision D-05 — 地点为演示数据
+状态：Assumed
+
 决定：V1 只使用一个城市的小型地点列表作为生成上下文。
 原因：减少地点准确性和检索系统的复杂度。
 影响：不承诺广泛城市覆盖，不建设 RAG。
@@ -165,31 +183,39 @@
 # Development Tasks
 
 ## Phase 1 — Setup
-- [ ] Create the single-page app and one server endpoint; done when both start locally.
-- [ ] Define input and three-plan response schemas; done when valid fixtures pass schema validation.
+- [ ] **T-01** `[FOUNDATION]` Create the single-page app and one server endpoint; done when both start locally.
+- [ ] **T-02** `[CF-01][CF-02]` Define input and three-plan response schemas; done when valid fixtures pass schema validation.
 
 ## Phase 2 — Core UI
-- [ ] Build the constraint form; done when all five inputs can be submitted.
-- [ ] Build three result cards; done when a fixture renders every required field.
+- [ ] **T-03** `[CF-01]` Build the constraint form; done when all five inputs can be submitted.
+- [ ] **T-04** `[CF-03]` Build three result cards; done when a fixture renders every required field.
 
 ## Phase 3 — Core Logic
-- [ ] Implement the structured generation endpoint; done when it returns exactly three valid plans.
-- [ ] Connect form submission to the endpoint; done when inputs produce rendered results.
-- [ ] Preserve inputs for regeneration; done when one constraint can be edited without re-entering the rest.
+- [ ] **T-05** `[CF-02]` Implement the structured generation endpoint; done when it returns exactly three valid plans.
+- [ ] **T-06** `[CF-01][CF-02][CF-03]` Connect form submission to the endpoint; done when inputs produce rendered results.
+- [ ] **T-07** `[CF-04]` Preserve inputs for regeneration; done when one constraint can be edited without re-entering the rest.
 
 ## Phase 4 — Product States
-- [ ] Add input validation and loading state; done when empty input is blocked and duplicate submissions are prevented.
-- [ ] Add generation failure and retry state; done when an invalid response shows a recoverable error.
+- [ ] **T-08** `[STATE]` Add input validation and loading state; done when empty input is blocked and duplicate submissions are prevented.
+- [ ] **T-09** `[STATE]` Add generation failure and retry state; done when an invalid response shows a recoverable error.
 
 ## Phase 5 — Polish
-- [ ] Make form and cards keyboard-usable and responsive; done when the core flow works at mobile width without horizontal scrolling.
+- [ ] **T-10** `[QUALITY]` Make form and cards keyboard-usable and responsive; done when the core flow works at mobile width without horizontal scrolling.
 
 ## Phase 6 — Demo
-- [ ] Add two representative input fixtures; done when low-budget and rainy-day scenarios both render valid plans.
-- [ ] Run the end-to-end core flow; done when every PRODUCT success criterion is observed.
+- [ ] **T-11** `[SC-01][SC-02]` Add two representative input fixtures; done when low-budget and rainy-day scenarios both render valid plans.
+- [ ] **T-12** `[SC-01][SC-02][SC-03]` Run the end-to-end core flow; done when every PRODUCT success criterion is observed.
+
+## Coverage Matrix
+
+| Core Feature | Task IDs | Success Criteria |
+| --- | --- | --- |
+| CF-01 | T-02, T-03, T-06 | SC-01 |
+| CF-02 | T-02, T-05, T-06 | SC-01, SC-02 |
+| CF-03 | T-04, T-06 | SC-02 |
+| CF-04 | T-07 | SC-03 |
 ```
 
 ## BUILD_PROMPT.md 示例
 
 The generated prompt instructs a new session to read `PRODUCT.md`, `DECISIONS.md`, and `TASKS.md`, begin with the first unchecked Phase 1 task, use only a single structured generation endpoint and session state, avoid accounts/databases/RAG, run the app after the phase, and update only verified task checkboxes.
-
